@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import CheckoutForm from "./CheckoutForm";
 import userEvent from "@testing-library/user-event";
 
@@ -13,7 +13,8 @@ import userEvent from "@testing-library/user-event";
 
 test("form shows success message on submit with form details", () => {
   render(<CheckoutForm />);
-  const successMessage = `You have ordered some plants! Woo-hoo! 🎉\n\nYour new green friends will be shipped to:`
+  const testMessageP1 = "You have ordered some plants! Woo-hoo!";
+  const testMessageP2 = "Your new green friends will be shipped to:";
   const testAddress = {
     firstName: "Testy",
     lastName: "Testington",
@@ -24,6 +25,37 @@ test("form shows success message on submit with form details", () => {
   }
   const firstNameInput = screen.getByLabelText(/first name:/i);
   expect(firstNameInput).toBeInTheDocument();
+  const lastNameInput = screen.getByLabelText(/last name:/i);
+  expect(lastNameInput).toBeInTheDocument();
+  const addressInput = screen.getByLabelText(/address/i);
+  expect(addressInput).toBeInTheDocument();
+  const cityInput = screen.getByLabelText(/city:/i);
+  expect(cityInput).toBeInTheDocument();
+  const stateInput = screen.getByLabelText(/state:/i);
+  expect(stateInput).toBeInTheDocument();
+  const zipInput = screen.getByLabelText(/zip:/i);
+  expect(zipInput).toBeInTheDocument();
+  const checkoutButton = screen.getByRole('button');
+  expect(checkoutButton).toBeInTheDocument();
+
   userEvent.type(firstNameInput, testAddress.firstName);
+  userEvent.type(lastNameInput, testAddress.lastName);
+  userEvent.type(addressInput, testAddress.address);
+  userEvent.type(cityInput, testAddress.city);
+  userEvent.type(stateInput, testAddress.state);
+  userEvent.type(zipInput, testAddress.zip);
+  userEvent.click(checkoutButton);
+
+  const successMessage = screen.getByTestId('successMessage');
+  expect(successMessage).toBeInTheDocument();
+  expect(successMessage).toHaveTextContent(testMessageP1);
+  expect(successMessage).toHaveTextContent(testMessageP2);
+  expect(successMessage).toHaveTextContent(testAddress.firstName);
+  expect(successMessage).toHaveTextContent(testAddress.lastName);
+  expect(successMessage).toHaveTextContent(testAddress.address);
+  expect(successMessage).toHaveTextContent(testAddress.city);
+  expect(successMessage).toHaveTextContent(testAddress.state);
+  expect(successMessage).toHaveTextContent(testAddress.zip);
   
+    
 });
